@@ -5,6 +5,7 @@ exports.createReportInsident = async (req, res) => {
         const {
             nama_pelapor,
             kategori,
+            departemen,
             lokasi_insiden,
             jenis_kelamin,
             waktu_kejadian,
@@ -37,16 +38,17 @@ exports.createReportInsident = async (req, res) => {
         // Query SQL untuk menyimpan data
         const query = `
             INSERT INTO report_incident (
-                nama_pelapor, kategori, lokasi_insiden, jenis_kelamin, waktu_kejadian,
+                nama_pelapor, kategori, departemen, lokasi_insiden, jenis_kelamin, waktu_kejadian,
                 no_telp, jenis_insiden, penyebab_insiden, penjelasan, masalah_penyebab, isKimia,
                 tingkat_keparahan, bukti_foto
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         // Nilai untuk query
         const values = [
             nama_pelapor,
             kategori,
+            departemen,
             lokasi_insiden,
             jenis_kelamin,
             waktu_kejadian,
@@ -154,6 +156,11 @@ exports.createReportApar = async (req, res) => {
             tgl_exp,
         } = req.body;
 
+        const formattedTglBeli = tgl_beli || null;
+        const formattedTglIsi = tgl_isi || null;
+        const formattedTglExp = tgl_exp || null;
+
+
         // Ensure that the file exists in req.file (for single file uploads)
         const img_url = req.file ? req.file.path : null;
 
@@ -164,7 +171,7 @@ exports.createReportApar = async (req, res) => {
             INSERT INTO report_apar (dept, ruang, lantai, jenis, ukuran, tgl_beli, tgl_isi, tgl_exp, img_url)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        await db.query(query, [dept, ruang, lantai, jenis, ukuran, tgl_beli, tgl_isi, tgl_exp, img_url]);
+        await db.query(query, [dept, ruang, lantai, jenis, ukuran, formattedTglBeli, formattedTglIsi, formattedTglExp, img_url]);
 
         res.status(201).json({ message: 'Report created successfully' });
     } catch (error) {
